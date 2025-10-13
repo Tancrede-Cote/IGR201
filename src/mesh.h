@@ -28,8 +28,11 @@ public:
 void init();
 // should properly set up the geometry buffer
 void render(); // should be called in the main rendering loop
-unsigned int verticesCount(){return m_triangleIndices.size();}
 static std::shared_ptr<Mesh> genSphere(const size_t resolution); // should generate a unit sphere
+void setProgram(GLuint& g_program){m_program=g_program;}
+void setOrigin(glm::vec3 o){origin=o;}
+void setColor(glm::vec3 col){color=col;}
+void setScale(float s){scale=s;}
 // ...
 private:
 std::vector<float> m_vertexPositions;
@@ -40,5 +43,8 @@ GLuint m_posVbo = 0;
 GLuint m_normalVbo = 0;
 GLuint m_ibo = 0;
 GLuint m_program = 0;
+glm::vec3 origin{};
+glm::vec3 color{};
+float scale=1.f;
 // ...
 };

@@ -2,6 +2,7 @@
 
 uniform vec3 camPos;
 uniform vec3 sunPos;
+uniform vec3 col;
 in vec3 fPosition;
 in vec3 fNormal;
 in vec3 coords;
@@ -16,8 +17,8 @@ void main() {
 	vec3 r = 2*n-l;
 	vec3 h = normalize(l+v);
 	vec3 ambient = vec3(1.0,1.0,1.0)*0;
-	vec3 diffuse = max(0,dot(n,l))*fPosition*vec3(1.0,1.0,0.0);// replace last vec by light*surface color
-	vec3 specular = max(0,dot(n,h))*fPosition;// replace last vec by light*surface color
+	vec3 diffuse = max(0,dot(n,l))*col*vec3(1.0,1.0,0.0);// replace last vec by light*surface color
+	vec3 specular = max(0,dot(n,h))*col;// replace last vec by light*surface color
 	color = vec4(ambient+diffuse+specular,1.0);
 	//colorE = vec4(ambient+diffuse+specular,1.0);
 }

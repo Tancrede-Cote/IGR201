@@ -37,9 +37,11 @@ void Mesh::init(){
 }
 
 void Mesh::render() {
-    // glm::mat4 model(1);
-    // model = glm::translate(model, glm::vec3(1.,0.,0.));
-    // glUniformMatrix4fv(glGetUniformLocation(g_program, "model"), 1, GL_FALSE, glm::value_ptr(model));
+    glm::mat4 model = glm::translate(glm::scale(glm::mat4(1),glm::vec3(scale)), origin);
+    glUniformMatrix4fv(glGetUniformLocation(m_program, "model"), 1, GL_FALSE, glm::value_ptr(model));
+
+    const glm::vec3 col = color; 
+    glUniform3f(glGetUniformLocation(m_program, "col"), col[0], col[1], col[2]);
     
     glBindVertexArray(m_vao);     // activate the VAO storing geometry data
     glDrawElements(GL_TRIANGLES, m_triangleIndices.size(), GL_UNSIGNED_INT, 0); // Call for rendering: stream the current GPU geometry through the current GPU program
@@ -95,10 +97,6 @@ std::shared_ptr<Mesh> Mesh::genSphere(const size_t _resolution){
     sphere->m_vertexNormals.push_back(0.f);
     sphere->m_vertexNormals.push_back(-1.f); // le bas
     sphere->m_vertexNormals.push_back(0.f);
-
-    std::cout<<sphere->m_vertexPositions.size()<<std::endl;
-    std::cout<<sphere->m_triangleIndices.size()<<std::endl;
-    std::cout<<sphere->m_vertexNormals.size()<<std::endl;
     // for(int k=0; k<sphere->m_vertexPositions.size()/3;k++){
     //     // std::cout<<sphere->m_vertexPositions[3*k]*sphere->m_vertexPositions[3*k]+sphere->m_vertexPositions[3*k+1]*sphere->m_vertexPositions[3*k+1]+sphere->m_vertexPositions[3*k+2]*sphere->m_vertexPositions[3*k+2]<<std::endl;
     //     std::cout<<"la face "<<sphere->m_triangleIndices[3*k]<<", "<<sphere->m_triangleIndices[3*k+1]<<", "<<sphere->m_triangleIndices[3*k+2]<<" donne la normale "<<sphere->m_vertexNormals[3*k]<<", "<<sphere->m_vertexNormals[3*k+1]<<", "<<sphere->m_vertexNormals[3*k+2]<<std::endl;

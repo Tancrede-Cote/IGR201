@@ -325,9 +325,6 @@ void render() {
   const glm::vec3 camPosition = g_camera.getPosition();
   glUniform3f(glGetUniformLocation(g_program, "camPos"), camPosition[0], camPosition[1], camPosition[2]);
 
-  const glm::vec3 sunPosition = glm::vec3(0.,0.,0.); 
-  glUniform3f(glGetUniformLocation(g_program, "sunPos"), sunPosition[0], sunPosition[1], sunPosition[2]);
-
 }
 
 // Update any accessible variable based on the current time
@@ -337,15 +334,24 @@ void update(const float currentTimeInSec) {
 }
 
 int main(int argc, char ** argv) {
-  std::shared_ptr<Mesh> sphere = Mesh::genSphere(16);
+  std::shared_ptr<Mesh> sun = Mesh::genSphere(16);
   std::shared_ptr<Mesh> earth = Mesh::genSphere(16);
   init(); // Your initialization code (user interface, OpenGL states, scene with geometry, material, lights, etc)
-  sphere->init();
+  sun->setProgram(g_program);
+  sun->setOrigin(glm::vec3(0.,0.,0.));
+  sun->setColor(glm::vec3(1.,1.,0.));
+  sun->setScale(1.f);
+  sun->init();
+  earth->setProgram(g_program);
+  earth->setOrigin(glm::vec3(0.8,0.,0.));
+  earth->setColor(glm::vec3(0.,1.,0.25));
+  earth->setScale(0.5f);
   earth->init();
   while(!glfwWindowShouldClose(g_window)) {
     update(static_cast<float>(glfwGetTime()));
     render();
-    sphere->render();
+    sun->render();
+    earth->render();
     glfwSwapBuffers(g_window);
     glfwPollEvents();
   }

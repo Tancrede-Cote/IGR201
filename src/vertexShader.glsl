@@ -10,7 +10,7 @@ out vec4 fPositionE;
 uniform mat4 model, viewMat, projMat;
 
 void main() {   
-        gl_Position = model*projMat*viewMat*vec4(vPosition, 1.0); // mandatory to rasterize properly
+        gl_Position = projMat*viewMat*model*vec4(vPosition, 1.0); // mandatory to rasterize properly
         // fPositionE = model*projMat*viewMat*vec4(vPosition, 1.0);
         fNormal=vNormal;
         fPosition=vPosition;

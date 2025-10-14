@@ -29,10 +29,6 @@ void init();
 // should properly set up the geometry buffer
 void render(); // should be called in the main rendering loop
 static std::shared_ptr<Mesh> genSphere(const size_t resolution); // should generate a unit sphere
-void setProgram(GLuint& g_program){m_program=g_program;}
-void setOrigin(glm::vec3 o){origin=o;}
-void setColor(glm::vec3 col){color=col;}
-void setScale(float s){scale=s;}
 // ...
 private:
 std::vector<float> m_vertexPositions;
@@ -42,9 +38,24 @@ GLuint m_vao = 0;
 GLuint m_posVbo = 0;
 GLuint m_normalVbo = 0;
 GLuint m_ibo = 0;
-GLuint m_program = 0;
+// ...
+};
+
+class Stellar {
+private:
+std::shared_ptr<Mesh> body;
 glm::vec3 origin{};
 glm::vec3 color{};
+glm::vec3 lighting{};
 float scale=1.f;
-// ...
+GLuint m_program = 0;
+public:
+Stellar(){body=Mesh::genSphere(16);}
+Stellar(const size_t res,GLuint g_program,glm::vec3 o,glm::vec3 col, glm::vec3 l, float s) : m_program(g_program), origin(o), color(col), lighting(l), scale(s) {body=Mesh::genSphere(res);body->init();}
+void setProgram(GLuint& g_program){m_program=g_program;}
+void setOrigin(glm::vec3 o){origin=o;}
+void setColor(glm::vec3 col){color=col;}
+void setScale(float s){scale=s;}
+void setLighting(glm::vec3 l){lighting=l;}
+void render();
 };

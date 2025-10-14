@@ -1,1 +1,6 @@
 .vscode/
+*.o
+compiler*
+*.json
+src/tpOpenGL
+src/build/tpOpenGL

@@ -13,5 +13,5 @@ CXX_DEFINES = -D_MY_OPENGL_IS_33_
 
 CXX_INCLUDES = -I/home/tank/Documents/cours/IGR/TP00-OpenGL/src/dep -I/home/tank/Documents/cours/IGR/TP00-OpenGL/src/dep/glad/include -I/home/tank/Documents/cours/IGR/TP00-OpenGL/src/dep/glfw/include -I/home/tank/Documents/cours/IGR/TP00-OpenGL/src
 
-CXX_FLAGS = -std=gnu++11
+CXX_FLAGS = -std=gnu++17
 

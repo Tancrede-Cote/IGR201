@@ -103,5 +103,8 @@ void Stellar::render(){
 
     const glm::vec3 l = lighting;
     glUniform3f(glGetUniformLocation(m_program, "lighting"), l[0], l[1], l[2]);
+
+    const glm::vec3 lcolor = lcolor;
+    glUniform3f(glGetUniformLocation(m_program, "lcolor"), lcolor[0], lcolor[1], lcolor[2]);
     body->render();
 }

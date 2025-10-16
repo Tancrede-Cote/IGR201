@@ -4,3 +4,4 @@ compiler*
 *.json
 src/tpOpenGL
 src/build/tpOpenGL
+*.ninja*

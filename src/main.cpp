@@ -44,6 +44,10 @@ const static float kSizeEarth = 0.5;
 const static float kSizeMoon = 0.25;
 const static float kRadOrbitEarth = 10;
 const static float kRadOrbitMoon = 2;
+static float e_o = 0.f;// orbit
+static float m_o = 0.f;
+static float e_r = 0.f;// rotation
+static float m_r = 0.f;
 
 glm::mat4 g_sun, g_earth, g_moon;
 
@@ -335,15 +339,20 @@ void render() {
 // Update any accessible variable based on the current time
 void update(const float currentTimeInSec) {
   // std::cout << currentTimeInSec << std::endl;
-
+  e_o += M_PI/360;
+  m_o += *M_PI/360;
+  items[1]->setOrigin(glm::vec3(spheric2cartx(10.,e_o,0.),spheric2carty(10.,e_o,0.),spheric2cartz(10.,e_o,0.)));
+  items[2]->setOrigin(glm::vec3(spheric2cartx(24.,m_o,0.),spheric2carty(24.,m_o,0.),spheric2cartz(24.,m_o,0.)));
 }
 
 int main(int argc, char ** argv) {
   init();
-  std::unique_ptr<Stellar> sun = std::make_unique<Stellar>(32, g_program, glm::vec3(0.,0.,0.), glm::vec3(1.,1.,0.), glm::vec3(0.,0.,0.), 1.f);
-  std::unique_ptr<Stellar> earth = std::make_unique<Stellar>(32, g_program, glm::vec3(5.0,0.,0.), glm::vec3(0.,1.,0.25), glm::vec3(1.,0.,0.), 0.5f);
+  std::unique_ptr<Stellar> sun = std::make_unique<Stellar>(32, g_program, glm::vec3(0.,0.,0.), glm::vec3(1.,1.,0.), glm::vec3(0.,0.,0.), glm::vec3(1.,1.,1.), 1.f);
+  std::unique_ptr<Stellar> earth = std::make_unique<Stellar>(32, g_program, glm::vec3(10.,0.,0.), glm::vec3(0.,1.,0.5), glm::vec3(-1.,0.,0.), glm::vec3(1.,1.,1.), 0.5f);
+  std::unique_ptr<Stellar> moon = std::make_unique<Stellar>(32, g_program, glm::vec3(24.,0.,0.), glm::vec3(0.,0.,1.), glm::vec3(-1.,0.,0.), glm::vec3(1.,1.,1.), 0.25f);
   items.push_back(std::move(sun));
   items.push_back(std::move(earth));
+  items.push_back(std::move(moon));
   while(!glfwWindowShouldClose(g_window)) {
     update(static_cast<float>(glfwGetTime()));
     render();

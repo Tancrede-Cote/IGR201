@@ -44,12 +44,17 @@ const static float kSizeEarth = 0.5;
 const static float kSizeMoon = 0.25;
 const static float kRadOrbitEarth = 10;
 const static float kRadOrbitMoon = 2;
+
+
 static float e_o = 0.f;// orbit
 static float m_o = 0.f;
 static float e_r = 0.f;// rotation
 static float m_r = 0.f;
 static float previousTime = 0.f;
 static float dt = 0.f;
+
+std::string media[] = { "", "media/earth.jpg", "media/moon.jpg" };
+
 
 glm::mat4 g_sun, g_earth, g_moon;
 
@@ -119,8 +124,15 @@ GLuint loadTextureFromFileToGPU(const std::string &filename) {
     0);
 
   GLuint texID;
-  // TODO: create a texture and upload the image data in GPU memory using
-  // glGenTextures, glBindTexture, glTexParameteri, and glTexImage2D
+  glGenTextures(1, &texID); // generate an OpenGL texture container
+  glBindTexture(GL_TEXTURE_2D, texID); // activate the texture
+  // Setup the texture filtering option and repeat mode; check www.opengl.org for details.
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  // Fill the GPU texture with the data stored in the CPU image
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 
   // Free useless CPU memory
   stbi_image_free(data);
@@ -333,16 +345,21 @@ void render() {
   const glm::vec3 camPosition = g_camera.getPosition();
   glUniform3f(glGetUniformLocation(g_program, "camPos"), camPosition[0], camPosition[1], camPosition[2]);
 
+  int i=0;
   for (auto& item : items){
+    GLuint texID = loadTextureFromFileToGPU(media[i]);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texID);
     item->render();
+    i++;
   }
 }
 
 // Update any accessible variable based on the current time
 void update(const float currentTimeInSec) {
   dt = currentTimeInSec-previousTime;
-  e_o += dt*M_PI/5;
-  m_o += dt*12*M_PI/5;
+  e_o += dt*M_PI/10;
+  m_o += dt*12*M_PI/10;
   items[1]->setOrigin(glm::vec3(spheric2cartx(20.,e_o,0.),spheric2carty(20.,e_o,0.),spheric2cartz(20.,e_o,0.)));
   glm::vec3 o = items[1]->getOrigin();
   items[1]->setLighting(items[0]->getOrigin()-o);
@@ -353,9 +370,9 @@ void update(const float currentTimeInSec) {
 
 int main(int argc, char ** argv) {
   init();
-  std::unique_ptr<Stellar> sun = std::make_unique<Stellar>(32, g_program, glm::vec3(0.,0.,0.), glm::vec3(1.,1.,0.), glm::vec3(0.,0.,0.), glm::vec3(1.,1.,1.), 1.f);
-  std::unique_ptr<Stellar> earth = std::make_unique<Stellar>(32, g_program, glm::vec3(10.,0.,0.), glm::vec3(0.,1.,0.5), glm::vec3(-1.,0.,0.), glm::vec3(1.,1.,1.), 0.5f);
-  std::unique_ptr<Stellar> moon = std::make_unique<Stellar>(32, g_program, glm::vec3(24.,0.,0.), glm::vec3(0.,0.,1.), glm::vec3(-1.,0.,0.), glm::vec3(1.,1.,1.), 0.25f);
+  std::unique_ptr<Stellar> sun = std::make_unique<Stellar>(32, g_program, glm::vec3(0.,0.,0.), glm::vec3(1.,1.,0.), glm::vec3(0.,0.,0.), glm::vec3(1.,1.,1.), 2.f, "");
+  std::unique_ptr<Stellar> earth = std::make_unique<Stellar>(32, g_program, glm::vec3(10.,0.,0.), 0.5f*glm::vec3(0.,1.,0.5), glm::vec3(-1.,0.,0.), glm::vec3(1.,1.,1.), 0.5f, "media/earth.jpg");
+  std::unique_ptr<Stellar> moon = std::make_unique<Stellar>(32, g_program, glm::vec3(24.,0.,0.), 0.5f*glm::vec3(0.,0.,1.), glm::vec3(-1.,0.,0.), glm::vec3(1.,1.,1.), 0.25f, "media/moon.jpg");
   items.push_back(std::move(sun));
   items.push_back(std::move(earth));
   items.push_back(std::move(moon));

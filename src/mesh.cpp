@@ -27,6 +27,12 @@ void Mesh::init(){
     glBufferData(GL_ARRAY_BUFFER, vertexBufferSize, m_vertexNormals.data(), GL_DYNAMIC_READ);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), 0);
     glEnableVertexAttribArray(1);
+    size_t vertexTexBufferSize = sizeof(float)*(m_vertexTexCoords.size());
+    glGenBuffers(1, &m_texCoordVbo);
+    glBindBuffer(GL_ARRAY_BUFFER, m_texCoordVbo);
+    glBufferData(GL_ARRAY_BUFFER, vertexTexBufferSize, m_vertexTexCoords.data(), GL_DYNAMIC_READ);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2*sizeof(GLfloat), 0);
+    glEnableVertexAttribArray(2);
 
     size_t indexBufferSize = sizeof(unsigned int)*m_triangleIndices.size();
     glGenBuffers(1, &m_ibo);
@@ -48,8 +54,8 @@ std::shared_ptr<Mesh> Mesh::genSphere(const size_t _resolution){
     sphere->m_vertexPositions.push_back(1.f); // le sommet
     sphere->m_vertexPositions.push_back(0.f);
 
-    sphere->m_vertexTexCoords.push_back(0.f);
     sphere->m_vertexTexCoords.push_back(1.f);
+    sphere->m_vertexTexCoords.push_back(0.f);
 
     sphere->m_vertexNormals.push_back(0.f);
     sphere->m_vertexNormals.push_back(1.f); // le sommet
@@ -63,8 +69,8 @@ std::shared_ptr<Mesh> Mesh::genSphere(const size_t _resolution){
             sphere->m_vertexPositions.push_back(spheric2cartx(1.f,theta,phi));
             sphere->m_vertexPositions.push_back(spheric2cartz(1.f,theta,phi));
             sphere->m_vertexPositions.push_back(spheric2carty(1.f,theta,phi));
-            sphere->m_vertexTexCoords.push_back(phi/(2*M_PI));
-            sphere->m_vertexTexCoords.push_back(1-theta/M_PI);
+            sphere->m_vertexTexCoords.push_back(1-phi/(2*M_PI));
+            sphere->m_vertexTexCoords.push_back(theta/M_PI);
 
             sphere->m_vertexNormals.push_back(spheric2cartx(1.f,theta,phi));
             sphere->m_vertexNormals.push_back(spheric2cartz(1.f,theta,phi));
@@ -96,8 +102,8 @@ std::shared_ptr<Mesh> Mesh::genSphere(const size_t _resolution){
     sphere->m_vertexPositions.push_back(-1.f); // le bas
     sphere->m_vertexPositions.push_back(0.f);
 
-    sphere->m_vertexTexCoords.push_back(1.f);
     sphere->m_vertexTexCoords.push_back(0.f);
+    sphere->m_vertexTexCoords.push_back(1.f);
 
     sphere->m_vertexNormals.push_back(0.f);
     sphere->m_vertexNormals.push_back(-1.f); // le bas

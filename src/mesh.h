@@ -50,11 +50,12 @@ glm::vec3 origin{};
 glm::vec3 color{};
 glm::vec3 lighting{};
 glm::vec3 lcolor{};
+std::string texture{};
 float scale=1.f;
 GLuint m_program = 0;
 public:
 Stellar(){body=Mesh::genSphere(16);}
-Stellar(const size_t res,GLuint g_program,glm::vec3 o,glm::vec3 col, glm::vec3 l, glm::vec3 lc, float s) : m_program(g_program), origin(o), color(col), lighting(l), lcolor(lc), scale(s) {body=Mesh::genSphere(res);body->init();}
+Stellar(const size_t res,GLuint g_program,glm::vec3 o,glm::vec3 col, glm::vec3 l, glm::vec3 lc, float s, std::string tex) : m_program(g_program), origin(o), color(col), lighting(l), lcolor(lc), scale(s), texture(tex) {body=Mesh::genSphere(res);body->init();}
 void setProgram(GLuint& g_program){m_program=g_program;}
 void setOrigin(glm::vec3 o){origin=o;}
 glm::vec3 getOrigin(){return origin;}

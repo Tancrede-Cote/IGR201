@@ -47,6 +47,10 @@ std::shared_ptr<Mesh> Mesh::genSphere(const size_t _resolution){
     sphere->m_vertexPositions.push_back(0.f);
     sphere->m_vertexPositions.push_back(1.f); // le sommet
     sphere->m_vertexPositions.push_back(0.f);
+
+    sphere->m_vertexTexCoords.push_back(0.f);
+    sphere->m_vertexTexCoords.push_back(1.f);
+
     sphere->m_vertexNormals.push_back(0.f);
     sphere->m_vertexNormals.push_back(1.f); // le sommet
     sphere->m_vertexNormals.push_back(0.f);
@@ -59,6 +63,9 @@ std::shared_ptr<Mesh> Mesh::genSphere(const size_t _resolution){
             sphere->m_vertexPositions.push_back(spheric2cartx(1.f,theta,phi));
             sphere->m_vertexPositions.push_back(spheric2cartz(1.f,theta,phi));
             sphere->m_vertexPositions.push_back(spheric2carty(1.f,theta,phi));
+            sphere->m_vertexTexCoords.push_back(phi/(2*M_PI));
+            sphere->m_vertexTexCoords.push_back(1-theta/M_PI);
+
             sphere->m_vertexNormals.push_back(spheric2cartx(1.f,theta,phi));
             sphere->m_vertexNormals.push_back(spheric2cartz(1.f,theta,phi));
             sphere->m_vertexNormals.push_back(spheric2carty(1.f,theta,phi));
@@ -88,6 +95,10 @@ std::shared_ptr<Mesh> Mesh::genSphere(const size_t _resolution){
     sphere->m_vertexPositions.push_back(0.f);
     sphere->m_vertexPositions.push_back(-1.f); // le bas
     sphere->m_vertexPositions.push_back(0.f);
+
+    sphere->m_vertexTexCoords.push_back(1.f);
+    sphere->m_vertexTexCoords.push_back(0.f);
+
     sphere->m_vertexNormals.push_back(0.f);
     sphere->m_vertexNormals.push_back(-1.f); // le bas
     sphere->m_vertexNormals.push_back(0.f);

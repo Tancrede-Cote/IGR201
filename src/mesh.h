@@ -34,6 +34,8 @@ private:
 std::vector<float> m_vertexPositions;
 std::vector<float> m_vertexNormals;
 std::vector<unsigned int> m_triangleIndices;
+std::vector<float> m_vertexTexCoords;
+GLuint m_texCoordVbo = 0;
 GLuint m_vao = 0;
 GLuint m_posVbo = 0;
 GLuint m_normalVbo = 0;
@@ -55,6 +57,7 @@ Stellar(){body=Mesh::genSphere(16);}
 Stellar(const size_t res,GLuint g_program,glm::vec3 o,glm::vec3 col, glm::vec3 l, glm::vec3 lc, float s) : m_program(g_program), origin(o), color(col), lighting(l), lcolor(lc), scale(s) {body=Mesh::genSphere(res);body->init();}
 void setProgram(GLuint& g_program){m_program=g_program;}
 void setOrigin(glm::vec3 o){origin=o;}
+glm::vec3 getOrigin(){return origin;}
 void setColor(glm::vec3 col){color=col;}
 void setScale(float s){scale=s;}
 void setLighting(glm::vec3 l){lighting=l;}

@@ -48,6 +48,8 @@ static float e_o = 0.f;// orbit
 static float m_o = 0.f;
 static float e_r = 0.f;// rotation
 static float m_r = 0.f;
+static float previousTime = 0.f;
+static float dt = 0.f;
 
 glm::mat4 g_sun, g_earth, g_moon;
 
@@ -338,11 +340,15 @@ void render() {
 
 // Update any accessible variable based on the current time
 void update(const float currentTimeInSec) {
-  // std::cout << currentTimeInSec << std::endl;
-  e_o += M_PI/360;
-  m_o += *M_PI/360;
-  items[1]->setOrigin(glm::vec3(spheric2cartx(10.,e_o,0.),spheric2carty(10.,e_o,0.),spheric2cartz(10.,e_o,0.)));
-  items[2]->setOrigin(glm::vec3(spheric2cartx(24.,m_o,0.),spheric2carty(24.,m_o,0.),spheric2cartz(24.,m_o,0.)));
+  dt = currentTimeInSec-previousTime;
+  e_o += dt*M_PI/5;
+  m_o += dt*12*M_PI/5;
+  items[1]->setOrigin(glm::vec3(spheric2cartx(20.,e_o,0.),spheric2carty(20.,e_o,0.),spheric2cartz(20.,e_o,0.)));
+  glm::vec3 o = items[1]->getOrigin();
+  items[1]->setLighting(items[0]->getOrigin()-o);
+  items[2]->setOrigin(glm::vec3(2*o.x+spheric2cartx(8.,m_o,0.),2*o.y+spheric2carty(8.,m_o,0.),2*o.z+spheric2cartz(8.,m_o,0.)));
+  items[2]->setLighting(items[0]->getOrigin()-items[2]->getOrigin());
+  previousTime = currentTimeInSec;
 }
 
 int main(int argc, char ** argv) {

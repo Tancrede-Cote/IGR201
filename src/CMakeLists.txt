@@ -31,6 +31,8 @@ target_sources(${PROJECT_NAME} PRIVATE dep/glad/src/gl.c)
 target_include_directories(${PROJECT_NAME} PRIVATE dep/)
 target_include_directories(${PROJECT_NAME} PRIVATE dep/glad/include/)
 
+set(GLFW_BUILD_WAYLAND OFF)
+set(GLFW_BUILD_X11 ON)
 add_subdirectory(dep/glfw)
 target_link_libraries(${PROJECT_NAME} glfw)
 

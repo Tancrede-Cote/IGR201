@@ -38,6 +38,8 @@
 
 #include "mesh.h"
 
+const int res = 32;
+
 // constants
 const static float kSizeSun = 1;
 const static float kSizeEarth = 0.5;
@@ -50,15 +52,19 @@ static float e_o = 0.f;// orbit
 static float m_o = 0.f;
 static float e_r = 0.f;// rotation
 static float m_r = 0.f;
-static float previousTime = 0.f;
-static float dt = 0.f;
 
-std::string media[] = { "", "media/earth.jpg", "media/moon.jpg" };
+std::string media[] = { "", "../media/earth.jpg", "../media/moon.jpg" };
 
+static float dt;
+static float previousTime;
 
 glm::mat4 g_sun, g_earth, g_moon;
 
 std::vector<std::unique_ptr<Stellar>> items;
+
+static GLuint texID;
+
+static std::vector<GLuint> texIDs;
 
 // Window parameters
 GLFWwindow *g_window = nullptr;
@@ -207,12 +213,13 @@ void initOpenGL() {
   glEnable(GL_CULL_FACE); // Enables face culling (based on the orientation defined by the CW/CCW enumeration).
   glDepthFunc(GL_LESS);   // Specify the depth test for the z-buffer
   glEnable(GL_DEPTH_TEST);      // Enable the z-buffer test in the rasterization
-  glClearColor(0.7f, 0.7f, 0.7f, 1.0f); // specify the background color, used any time the framebuffer is cleared
+  glClearColor(0.f, 0.f, 0.f, 1.0f); // specify the background color, used any time the framebuffer is cleared
 }
 
 // Loads the content of an ASCII file in a standard C++ string
 std::string file2String(const std::string &filename) {
-  std::ifstream t(filename.c_str());
+  std::ifstream t(("../" + filename).c_str());
+  if(not t.is_open()) std::cout << "file not found : " << filename << std::endl;
   std::stringstream buffer;
   buffer << t.rdbuf();
   return buffer.str();
@@ -319,10 +326,13 @@ void initCamera() {
 void init() {
   initGLFW();
   initOpenGL();
-  //initCPUgeometry();
   initGPUprogram();
-  //initGPUgeometry();
   initCamera();
+  int i=0;
+  for (auto& m : media){
+    texIDs.push_back(loadTextureFromFileToGPU(media[i]));
+    i++;
+  }
 }
 
 void clear() {
@@ -347,9 +357,8 @@ void render() {
 
   int i=0;
   for (auto& item : items){
-    GLuint texID = loadTextureFromFileToGPU(media[i]);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texID);
+    glBindTexture(GL_TEXTURE_2D, texIDs[i]);
     item->render();
     i++;
   }
@@ -366,13 +375,16 @@ void update(const float currentTimeInSec) {
   items[2]->setOrigin(glm::vec3(2*o.x+spheric2cartx(8.,m_o,0.),2*o.y+spheric2carty(8.,m_o,0.),2*o.z+spheric2cartz(8.,m_o,0.)));
   items[2]->setLighting(items[0]->getOrigin()-items[2]->getOrigin());
   previousTime = currentTimeInSec;
+  for (auto& item : items){
+    item->setTime(currentTimeInSec);
+  }
 }
 
 int main(int argc, char ** argv) {
   init();
-  std::unique_ptr<Stellar> sun = std::make_unique<Stellar>(32, g_program, glm::vec3(0.,0.,0.), glm::vec3(1.,1.,0.), glm::vec3(0.,0.,0.), glm::vec3(1.,1.,1.), 2.f, "");
-  std::unique_ptr<Stellar> earth = std::make_unique<Stellar>(32, g_program, glm::vec3(10.,0.,0.), 0.5f*glm::vec3(0.,1.,0.5), glm::vec3(-1.,0.,0.), glm::vec3(1.,1.,1.), 0.5f, "media/earth.jpg");
-  std::unique_ptr<Stellar> moon = std::make_unique<Stellar>(32, g_program, glm::vec3(24.,0.,0.), 0.5f*glm::vec3(0.,0.,1.), glm::vec3(-1.,0.,0.), glm::vec3(1.,1.,1.), 0.25f, "media/moon.jpg");
+  std::unique_ptr<Stellar> sun = std::make_unique<Stellar>(res, g_program, glm::vec3(0.,0.,0.), glm::vec3(1.,1.,0.), glm::vec3(0.,0.,0.), glm::vec3(1.,1.,1.), 2.f, true, false);
+  std::unique_ptr<Stellar> earth = std::make_unique<Stellar>(res, g_program, glm::vec3(10.,0.,0.), 0.5f*glm::vec3(0.,1.,0.5), glm::vec3(-1.,0.,0.), glm::vec3(1.,1.,1.), 0.5f, true, true);
+  std::unique_ptr<Stellar> moon = std::make_unique<Stellar>(res, g_program, glm::vec3(24.,0.,0.), 0.5f*glm::vec3(0.,0.,1.), glm::vec3(-1.,0.,0.), glm::vec3(1.,1.,1.), 0.25f, true, false);
   items.push_back(std::move(sun));
   items.push_back(std::move(earth));
   items.push_back(std::move(moon));

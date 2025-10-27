@@ -51,69 +51,92 @@ std::shared_ptr<Mesh> Mesh::genSphere(const size_t _resolution){
     int resolution = (int)_resolution;
     std::shared_ptr<Mesh> sphere = std::make_shared<Mesh>();
     sphere->m_vertexPositions.push_back(0.f);
-    sphere->m_vertexPositions.push_back(1.f); // le sommet
-    sphere->m_vertexPositions.push_back(0.f);
+    sphere->m_vertexPositions.push_back(0.f); // le sommet
+    sphere->m_vertexPositions.push_back(1.f);
 
     sphere->m_vertexTexCoords.push_back(1.f);
     sphere->m_vertexTexCoords.push_back(0.f);
 
     sphere->m_vertexNormals.push_back(0.f);
-    sphere->m_vertexNormals.push_back(1.f); // le sommet
-    sphere->m_vertexNormals.push_back(0.f);
+    sphere->m_vertexNormals.push_back(0.f); // le sommet
+    sphere->m_vertexNormals.push_back(1.f);
     float theta = M_PI/(float)resolution;
     int i = 0;
     while(theta<M_PI){
         float phi = 0.f;
         int j = 1;
         while(phi<2*M_PI){
+            // std::cout<<"phi = "<<phi<<std::endl;
+            // std::cout<<"theta = "<<theta<<std::endl;
+            // std::cout<<"x = "<<spheric2cartx(1.f,theta,phi)<<std::endl;
+            // std::cout<<"y = "<<spheric2carty(1.f,theta,phi)<<std::endl;
+            // std::cout<<"z = "<<spheric2cartz(1.f,theta,phi)<<std::endl;
             sphere->m_vertexPositions.push_back(spheric2cartx(1.f,theta,phi));
-            sphere->m_vertexPositions.push_back(spheric2cartz(1.f,theta,phi));
             sphere->m_vertexPositions.push_back(spheric2carty(1.f,theta,phi));
+            sphere->m_vertexPositions.push_back(spheric2cartz(1.f,theta,phi));
             sphere->m_vertexTexCoords.push_back(1-phi/(2*M_PI));
             sphere->m_vertexTexCoords.push_back(theta/M_PI);
 
             sphere->m_vertexNormals.push_back(spheric2cartx(1.f,theta,phi));
-            sphere->m_vertexNormals.push_back(spheric2cartz(1.f,theta,phi));
             sphere->m_vertexNormals.push_back(spheric2carty(1.f,theta,phi));
+            sphere->m_vertexNormals.push_back(spheric2cartz(1.f,theta,phi));
             if(!i){
                 sphere->m_triangleIndices.push_back((unsigned int)0);
-                sphere->m_triangleIndices.push_back((unsigned int)((j+resolution-2)%resolution+1));
                 sphere->m_triangleIndices.push_back((unsigned int)j);
+                sphere->m_triangleIndices.push_back((unsigned int)((j+resolution-2)%resolution+1));
+                // std::cout<<"triangle "<<0<<", "<<(j+resolution-2)%resolution+1<<", "<<j<<std::endl;
             } else {
                 sphere->m_triangleIndices.push_back((unsigned int)(i*resolution+((j-1+resolution)%resolution)));
                 sphere->m_triangleIndices.push_back((unsigned int)((i-1)*resolution+j));
                 sphere->m_triangleIndices.push_back((unsigned int)(i*resolution+j));
                 sphere->m_triangleIndices.push_back((unsigned int)(i*resolution+j));
                 sphere->m_triangleIndices.push_back((unsigned int)((i-1)*resolution+j));
-                sphere->m_triangleIndices.push_back((unsigned int)((i-1)*resolution+(j%resolution+1)));
+                sphere->m_triangleIndices.push_back((unsigned int)((i-1)*resolution+(j+1)));
+                // // std::cout<<"triangle "<<i*resolution+((j-1+resolution)%resolution)<<", "<<(i-1)*resolution+j<<", "<<i*resolution+j<<std::endl;
+                // // std::cout<<"et triangle "<<(i)*resolution+j<<", "<<(i-1)*resolution+j<<", "<<(i-1)*resolution+(j+1)<<std::endl;
             }
-            phi+=2*M_PI/resolution;
+            phi+=2*M_PI/(float)resolution;
             j++;
         }
-        theta+=M_PI/resolution;
+        theta+=M_PI/(float)resolution;
         i++;
     }
     for (int l=1; l<=resolution; l++){
         sphere->m_triangleIndices.push_back((unsigned int)(resolution*(resolution-2)+l));
         sphere->m_triangleIndices.push_back((unsigned int)(resolution*(resolution-2)+l%resolution+1));
         sphere->m_triangleIndices.push_back((unsigned int)(resolution*(resolution-1)+1));
+        // // std::cout<<"triangle "<<resolution*(resolution-2)+l<<", "<<resolution*(resolution-2)+l%resolution+1<<", "<<resolution*(resolution-1)+1<<std::endl;
     }
+
+    for (auto& coor : sphere->m_triangleIndices){
+        // std::cout<<coor<<" ";
+    }
+    // std::cout<<std::endl;
     sphere->m_vertexPositions.push_back(0.f);
-    sphere->m_vertexPositions.push_back(-1.f); // le bas
-    sphere->m_vertexPositions.push_back(0.f);
+    sphere->m_vertexPositions.push_back(0.f); // le bas
+    sphere->m_vertexPositions.push_back(-1.f);
 
     sphere->m_vertexTexCoords.push_back(0.f);
     sphere->m_vertexTexCoords.push_back(1.f);
 
     sphere->m_vertexNormals.push_back(0.f);
-    sphere->m_vertexNormals.push_back(-1.f); // le bas
-    sphere->m_vertexNormals.push_back(0.f);
+    sphere->m_vertexNormals.push_back(0.f); // le bas
+    sphere->m_vertexNormals.push_back(-1.f);
+    // std::cout<<sphere->m_vertexPositions.size()/3<<", "<<sphere->m_vertexTexCoords.size()/2<<", "<<sphere->m_vertexNormals.size()/3<<", "<<sphere->m_triangleIndices.size()/3<<std::endl;
     return sphere;
 }
 
 void Stellar::render(){
+    //glm::mat4 model = glm::rotate(glm::translate(glm::scale(glm::mat4(1),glm::vec3(scale)), origin),-23.5f*(float)M_PI/180.f,glm::vec3(0.,0.,1.));
+    glm::mat4 roty = glm::rotate(glm::mat4(1.f),-(time)*(float)M_PI/1.f,glm::vec3(0.,1.,0.));
+    glm::mat4 rotx = glm::rotate(glm::mat4(1.f),-(float)M_PI/2.f,glm::vec3(1.,0.,0.));
+    //// std::cout<<time<<std::endl;
+    glm::mat4 rotz = glm::rotate(glm::mat4(1.f),-23.5f*(float)tilted*(float)M_PI/180.f,glm::vec3(0.,0.,1.));
     glm::mat4 model = glm::translate(glm::scale(glm::mat4(1),glm::vec3(scale)), origin);
     glUniformMatrix4fv(glGetUniformLocation(m_program, "model"), 1, GL_FALSE, glm::value_ptr(model));
+    glUniformMatrix4fv(glGetUniformLocation(m_program, "rotz"), 1, GL_FALSE, glm::value_ptr(rotz));
+    glUniformMatrix4fv(glGetUniformLocation(m_program, "rotx"), 1, GL_FALSE, glm::value_ptr(rotx));
+    glUniformMatrix4fv(glGetUniformLocation(m_program, "roty"), 1, GL_FALSE, glm::value_ptr(roty));
 
     const glm::vec3 col = color; 
     glUniform3f(glGetUniformLocation(m_program, "col"), col[0], col[1], col[2]);

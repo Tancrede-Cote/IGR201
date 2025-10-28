@@ -21,6 +21,9 @@
 float spheric2cartx(float,float,float);
 float spheric2carty(float,float,float);
 float spheric2cartz(float,float,float);
+float spheric2cartx(glm::vec3);
+float spheric2carty(glm::vec3);
+float spheric2cartz(glm::vec3);
 
 
 class Mesh {
@@ -53,11 +56,14 @@ glm::vec3 lcolor{};
 float scale=1.f;
 float time=0.f;
 GLuint m_program = 0;
-bool rotates{};
+float s_r{};// stellar rotation
+float s_rs{};// stellar rotation speed
+float s_o{};// stellar orbital 
+float s_os{};// stellar orbital speed
 bool tilted{};
 public:
 Stellar(){body=Mesh::genSphere(16);}
-Stellar(const size_t res,GLuint g_program,glm::vec3 o,glm::vec3 col, glm::vec3 l, glm::vec3 lc, float s, bool rotates=false, bool tilted=false) : m_program(g_program), origin(o), color(col), lighting(l), lcolor(lc), scale(s), rotates(rotates), tilted(tilted) {body=Mesh::genSphere(res);body->init();}
+Stellar(const size_t res,GLuint g_program,glm::vec3 o,glm::vec3 col, glm::vec3 l, glm::vec3 lc, float s, float rotSpeed=0.f, float orbSpeed=0.f, bool tilted=false) : m_program(g_program), origin(o), color(col), lighting(l), lcolor(lc), scale(s), s_rs(rotSpeed), s_os(orbSpeed), tilted(tilted) {body=Mesh::genSphere(res);body->init();}
 void setProgram(GLuint& g_program){m_program=g_program;}
 void setOrigin(glm::vec3 o){origin=o;}
 glm::vec3 getOrigin(){return origin;}
@@ -66,4 +72,5 @@ void setScale(float s){scale=s;}
 void setLighting(glm::vec3 l){lighting=l;}
 void setTime(float t){time=t;}
 void render();
+void update(const float currentTimeInSec);
 };

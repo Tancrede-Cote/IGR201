@@ -5,3 +5,4 @@ compiler*
 src/tpOpenGL
 src/build/tpOpenGL
 *.ninja*
+src/build/CMakeFiles/tpOpenGL.dir/*

@@ -368,12 +368,12 @@ void render() {
 void update(const float currentTimeInSec) {
   dt = currentTimeInSec-previousTime;
   e_o += dt*M_PI/10;
-  m_o += dt*12*M_PI/10;
-  items[1]->setOrigin(glm::vec3(spheric2cartx(20.,e_o,0.),spheric2carty(20.,e_o,0.),spheric2cartz(20.,e_o,0.)));
-  glm::vec3 o = items[1]->getOrigin();
-  items[1]->setLighting(items[0]->getOrigin()-o);
-  items[2]->setOrigin(glm::vec3(2*o.x+spheric2cartx(8.,m_o,0.),2*o.y+spheric2carty(8.,m_o,0.),2*o.z+spheric2cartz(8.,m_o,0.)));
-  items[2]->setLighting(items[0]->getOrigin()-items[2]->getOrigin());
+  m_o += dt*2*M_PI/10;
+  items[1]->setOrigin(glm::vec3(spheric2cartx(20.,M_PI/2.f,e_o),spheric2carty(20.,M_PI/2.f,e_o),spheric2cartz(20.,M_PI/2.f,e_o)));
+  glm::vec3 o = glm::vec3(-spheric2cartx(20.,M_PI/2.f,e_o),spheric2carty(20.,M_PI/2.f,e_o),spheric2cartz(20.,M_PI/2.f,e_o));
+  items[1]->setLighting(o);
+  items[2]->setOrigin(glm::vec3(-2*o.x+spheric2cartx(8.,M_PI/2.f,m_o),2*o.y+spheric2carty(8.,M_PI/2.f,m_o),2*o.z+spheric2cartz(8.,M_PI/2.f,m_o)));
+  items[2]->setLighting(-items[2]->getOrigin());
   previousTime = currentTimeInSec;
   for (auto& item : items){
     item->setTime(currentTimeInSec);
@@ -382,9 +382,9 @@ void update(const float currentTimeInSec) {
 
 int main(int argc, char ** argv) {
   init();
-  std::unique_ptr<Stellar> sun = std::make_unique<Stellar>(res, g_program, glm::vec3(0.,0.,0.), glm::vec3(1.,1.,0.), glm::vec3(0.,0.,0.), glm::vec3(1.,1.,1.), 2.f, true, false);
-  std::unique_ptr<Stellar> earth = std::make_unique<Stellar>(res, g_program, glm::vec3(10.,0.,0.), 0.5f*glm::vec3(0.,1.,0.5), glm::vec3(-1.,0.,0.), glm::vec3(1.,1.,1.), 0.5f, true, true);
-  std::unique_ptr<Stellar> moon = std::make_unique<Stellar>(res, g_program, glm::vec3(24.,0.,0.), 0.5f*glm::vec3(0.,0.,1.), glm::vec3(-1.,0.,0.), glm::vec3(1.,1.,1.), 0.25f, true, false);
+  std::unique_ptr<Stellar> sun = std::make_unique<Stellar>(res, g_program, glm::vec3(0.,0.,0.), glm::vec3(1.,1.,0.), glm::vec3(0.,0.,0.), glm::vec3(0.,0.,0.), 2.f, 0.f, 1.f, true);// for now rotspeed>0
+  std::unique_ptr<Stellar> earth = std::make_unique<Stellar>(res, g_program, glm::vec3(10.,0.,0.), 0.2f*glm::vec3(0.,1.,0.5), glm::vec3(-1.,0.,0.), glm::vec3(1.,1.,1.), 0.5f, 12.f, 6.f, true);
+  std::unique_ptr<Stellar> moon = std::make_unique<Stellar>(res, g_program, glm::vec3(24.,0.,0.), 0.2f*glm::vec3(0.,0.,1.), glm::vec3(-1.,0.,0.), glm::vec3(1.,1.,1.), 0.25f, 24.f, 24.f, false);
   items.push_back(std::move(sun));
   items.push_back(std::move(earth));
   items.push_back(std::move(moon));

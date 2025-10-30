@@ -55,6 +55,7 @@ glm::vec3 lighting{};
 glm::vec3 lcolor{};
 float scale=1.f;
 float time=0.f;
+float rad{};
 GLuint m_program = 0;
 float s_r{};// stellar rotation
 float s_rs{};// stellar rotation speed
@@ -63,7 +64,7 @@ float s_os{};// stellar orbital speed
 bool tilted{};
 public:
 Stellar(){body=Mesh::genSphere(16);}
-Stellar(const size_t res,GLuint g_program,glm::vec3 o,glm::vec3 col, glm::vec3 l, glm::vec3 lc, float s, float rotSpeed=0.f, float orbSpeed=0.f, bool tilted=false) : m_program(g_program), origin(o), color(col), lighting(l), lcolor(lc), scale(s), s_rs(rotSpeed), s_os(orbSpeed), tilted(tilted) {body=Mesh::genSphere(res);body->init();}
+Stellar(const size_t res,GLuint g_program,glm::vec3 o,glm::vec3 col, glm::vec3 l, glm::vec3 lc, float s, float rotSpeed=0.f, float orbSpeed=0.f, float rad=0.f, bool tilted=false) : m_program(g_program), origin(o), color(col), lighting(l), lcolor(lc), scale(s), s_rs(rotSpeed), s_os(orbSpeed), rad(rad), tilted(tilted) {body=Mesh::genSphere(res);body->init();}
 void setProgram(GLuint& g_program){m_program=g_program;}
 void setOrigin(glm::vec3 o){origin=o;}
 glm::vec3 getOrigin(){return origin;}
@@ -72,5 +73,6 @@ void setScale(float s){scale=s;}
 void setLighting(glm::vec3 l){lighting=l;}
 void setTime(float t){time=t;}
 void render();
-void update(const float currentTimeInSec);
+void update(const float currentTimeInSec, glm::vec3 o_c);// center and radius of the orbit
+float r() {return sqrtf(origin.x*origin.x+origin.y*origin.y+origin.z*origin.z);}
 };

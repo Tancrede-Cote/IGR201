@@ -38,7 +38,9 @@
 
 #include "mesh.h"
 
-const int res = 32;
+const int res = 256;
+const static float speed = 0.025;
+const float size = 2.;
 
 // constants
 const static float kSizeSun = 1;
@@ -135,8 +137,8 @@ GLuint loadTextureFromFileToGPU(const std::string &filename) {
   // Setup the texture filtering option and repeat mode; check www.opengl.org for details.
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
   // Fill the GPU texture with the data stored in the CPU image
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 
@@ -366,25 +368,27 @@ void render() {
 
 // Update any accessible variable based on the current time
 void update(const float currentTimeInSec) {
-  dt = currentTimeInSec-previousTime;
-  e_o += dt*M_PI/10;
-  m_o += dt*2*M_PI/10;
-  items[1]->setOrigin(glm::vec3(spheric2cartx(20.,M_PI/2.f,e_o),spheric2carty(20.,M_PI/2.f,e_o),spheric2cartz(20.,M_PI/2.f,e_o)));
-  glm::vec3 o = glm::vec3(-spheric2cartx(20.,M_PI/2.f,e_o),spheric2carty(20.,M_PI/2.f,e_o),spheric2cartz(20.,M_PI/2.f,e_o));
-  items[1]->setLighting(o);
-  items[2]->setOrigin(glm::vec3(-2*o.x+spheric2cartx(8.,M_PI/2.f,m_o),2*o.y+spheric2carty(8.,M_PI/2.f,m_o),2*o.z+spheric2cartz(8.,M_PI/2.f,m_o)));
-  items[2]->setLighting(-items[2]->getOrigin());
+  // dt = currentTimeInSec-previousTime;
+  // e_o += dt*M_PI/10;
+  // m_o += dt*12*M_PI/10;
+  // items[1]->setOrigin(glm::vec3(spheric2cartx(20.,M_PI/2.f,e_o),spheric2carty(20.,M_PI/2.f,e_o),spheric2cartz(20.,M_PI/2.f,e_o)));
+  // glm::vec3 o = glm::vec3(-spheric2cartx(20.,M_PI/2.f,e_o),spheric2carty(20.,M_PI/2.f,e_o),spheric2cartz(20.,M_PI/2.f,e_o));
+  // items[1]->setLighting(o);
+  // items[2]->setOrigin(glm::vec3(-2*o.x+spheric2cartx(8.,M_PI/2.f,m_o),2*o.y+spheric2carty(8.,M_PI/2.f,m_o),2*o.z+spheric2cartz(8.,M_PI/2.f,m_o)));
+  // items[2]->setLighting(glm::vec3(2*o.x-spheric2cartx(8.,M_PI/2.f,m_o),2*o.y+spheric2carty(8.,M_PI/2.f,m_o),2*o.z+spheric2cartz(8.,M_PI/2.f,m_o)));
+  glm::vec3 o(0.,0.,0.);
   previousTime = currentTimeInSec;
   for (auto& item : items){
-    item->setTime(currentTimeInSec);
+    item->update(currentTimeInSec,o);
+    o=item->getOrigin();
   }
 }
 
 int main(int argc, char ** argv) {
   init();
-  std::unique_ptr<Stellar> sun = std::make_unique<Stellar>(res, g_program, glm::vec3(0.,0.,0.), glm::vec3(1.,1.,0.), glm::vec3(0.,0.,0.), glm::vec3(0.,0.,0.), 2.f, 0.f, 1.f, true);// for now rotspeed>0
-  std::unique_ptr<Stellar> earth = std::make_unique<Stellar>(res, g_program, glm::vec3(10.,0.,0.), 0.2f*glm::vec3(0.,1.,0.5), glm::vec3(-1.,0.,0.), glm::vec3(1.,1.,1.), 0.5f, 12.f, 6.f, true);
-  std::unique_ptr<Stellar> moon = std::make_unique<Stellar>(res, g_program, glm::vec3(24.,0.,0.), 0.2f*glm::vec3(0.,0.,1.), glm::vec3(-1.,0.,0.), glm::vec3(1.,1.,1.), 0.25f, 24.f, 24.f, false);
+  std::unique_ptr<Stellar> sun = std::make_unique<Stellar>(res, g_program, glm::vec3(0.,0.,0.), glm::vec3(1.,1.,0.), glm::vec3(0.,0.,0.), glm::vec3(0.,0.,0.), size*kSizeSun, 0.f, 1.f*speed, 0.f, true);// for now rotspeed>0
+  std::unique_ptr<Stellar> earth = std::make_unique<Stellar>(res, g_program, glm::vec3(10.,0.,0.), 0.2f*glm::vec3(0.,1.,1.), glm::vec3(0.,0.,-1.), glm::vec3(1.,1.,1.), size*kSizeEarth, 12.f*speed, 6.f*speed, kRadOrbitEarth, true);
+  std::unique_ptr<Stellar> moon = std::make_unique<Stellar>(res, g_program, glm::vec3(24.,0.,0.), 0.2f*glm::vec3(0.,0.,1.), glm::vec3(0.,0.,-1.), glm::vec3(1.,1.,0.), size*kSizeMoon, 24.f*speed, 24.f*speed, kRadOrbitMoon, false);
   items.push_back(std::move(sun));
   items.push_back(std::move(earth));
   items.push_back(std::move(moon));

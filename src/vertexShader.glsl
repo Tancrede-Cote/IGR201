@@ -12,8 +12,8 @@ out vec2 fragmentTexCoord;
 uniform mat4 temprotx, rotz, rotx, roty, model, viewMat, projMat;
 
 void main() {   
-        gl_Position = projMat*viewMat*rotx*model*rotz*roty*vec4(vPosition, 1.0); // mandatory to rasterize properly
-        fNormal=mat3(transpose(inverse(model*rotz*roty)))*vNormal;
+        gl_Position = projMat*viewMat*rotx*model*roty*rotz*vec4(vPosition, 1.0); // mandatory to rasterize properly
+        fNormal=mat3(transpose(inverse(model*roty*rotz)))*vNormal;
         fPosition=vPosition;
         fragmentTexCoord=vertexTexCoord;
 }

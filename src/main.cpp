@@ -57,6 +57,15 @@ static float m_r = 0.f;
 
 std::string media[] = { "../media/sun.jpg", "../media/earth.jpg", "../media/moon.jpg" };
 
+std::vector<std::string> faces = {
+    "../media/right.png",
+    "../media/left.png",
+    "../media/top.png",
+    "../media/bottom.png",
+    "../media/front.png",
+    "../media/back.png"
+};
+
 static float dt;
 static float previousTime;
 
@@ -73,6 +82,7 @@ GLFWwindow *g_window = nullptr;
 
 // GPU objects
 GLuint g_program = 0; // A GPU program contains at least a vertex shader and a fragment shader
+GLuint skybox_program = 0;
 
 // OpenGL identifiers
 GLuint g_vao = 0;
@@ -118,6 +128,55 @@ std::vector<float> g_vertexPositions;
 std::vector<unsigned int> g_triangleIndices;
 // All colors
 std::vector<float> g_vertexColors;
+
+GLuint skyboxVAO = 0;
+
+std::vector<float> skyboxVertices = {
+    // positions          
+    -1.0f,  1.0f, -1.0f,
+    -1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+
+    -1.0f, -1.0f,  1.0f,
+    -1.0f, -1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f,  1.0f,
+    -1.0f, -1.0f,  1.0f,
+
+     1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+
+    -1.0f, -1.0f,  1.0f,
+    -1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f, -1.0f,  1.0f,
+    -1.0f, -1.0f,  1.0f,
+
+    -1.0f,  1.0f, -1.0f,
+     1.0f,  1.0f, -1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+    -1.0f,  1.0f,  1.0f,
+    -1.0f,  1.0f, -1.0f,
+
+    -1.0f, -1.0f, -1.0f,
+    -1.0f, -1.0f,  1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+    -1.0f, -1.0f,  1.0f,
+     1.0f, -1.0f,  1.0f
+};
+
+
 
 // Basic camera model
 
@@ -263,29 +322,31 @@ void initCPUgeometry() {
   g_vertexColors = {1.f,0.f,0.f,0.f,1.f,0.f,0.f,0.f,1.f};
 }
 
-void initGPUgeometry() {
+void initSkybox() {
   // Create a single handle, vertex array object that contains attributes,
   // vertex buffer objects (e.g., vertex's position, normal, and color)
 #ifdef _MY_OPENGL_IS_33_
-  glGenVertexArrays(1, &g_vao); // If your system doesn't support OpenGL 4.5, you should use this instead of glCreateVertexArrays.
+  glGenVertexArrays(1, &skyboxVAO); // If your system doesn't support OpenGL 4.5, you should use this instead of glCreateVertexArrays.
 #else
   glCreateVertexArrays(1, &g_vao);
 #endif
-  glBindVertexArray(g_vao);
+  glBindVertexArray(skyboxVAO);
 
   // Generate a GPU buffer to store the positions of the vertices
-  size_t vertexBufferSize = sizeof(float)*(g_vertexPositions.size()); // Gather the size of the buffer from the CPU-side vector
+  size_t vertexBufferSize = sizeof(float)*(skyboxVertices.size()); // Gather the size of the buffer from the CPU-side vector
 #ifdef _MY_OPENGL_IS_33_
-  glGenBuffers(1, &g_posVbo);
-  glBindBuffer(GL_ARRAY_BUFFER, g_posVbo);
-  glBufferData(GL_ARRAY_BUFFER, vertexBufferSize, g_vertexPositions.data(), GL_DYNAMIC_READ);
+  skybox_program = glCreateProgram(); // Create a GPU program, i.e., two central shaders of the graphics pipeline
+  loadShader(skybox_program, GL_VERTEX_SHADER, "skyboxVertexShader.glsl");
+  loadShader(skybox_program, GL_FRAGMENT_SHADER, "skyboxFragmentShader.glsl");
+  glLinkProgram(skybox_program); // The main GPU program is ready to be handle streams of polygons
+
+  glUseProgram(skybox_program);
+
+  glGenBuffers(1, &skyboxVAO);
+  glBindBuffer(GL_ARRAY_BUFFER, skyboxVAO);
+  glBufferData(GL_ARRAY_BUFFER, vertexBufferSize, skyboxVertices.data(), GL_DYNAMIC_READ);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), 0);
   glEnableVertexAttribArray(0);
-  glGenBuffers(1, &g_colVbo);
-  glBindBuffer(GL_ARRAY_BUFFER, g_colVbo);
-  glBufferData(GL_ARRAY_BUFFER, vertexBufferSize, g_vertexColors.data(), GL_DYNAMIC_READ);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), 0);
-  glEnableVertexAttribArray(1);
 #else
   glCreateBuffers(1, &g_posVbo);
   glBindBuffer(GL_ARRAY_BUFFER, g_posVbo);
@@ -303,9 +364,9 @@ void initGPUgeometry() {
   // triangles forming the mesh
   size_t indexBufferSize = sizeof(unsigned int)*g_triangleIndices.size();
 #ifdef _MY_OPENGL_IS_33_
-  glGenBuffers(1, &g_ibo);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_ibo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBufferSize, g_triangleIndices.data(), GL_DYNAMIC_READ);
+  // glGenBuffers(1, &g_ibo);
+  // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_ibo);
+  // glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBufferSize, g_triangleIndices.data(), GL_DYNAMIC_READ);
 #else
   glCreateBuffers(1, &g_ibo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_ibo);
@@ -325,10 +386,43 @@ void initCamera() {
     g_camera.setFar(80.1);
 }
 
+unsigned int loadCubemap(std::vector<std::string> faces)
+{
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+    int width, height, nrChannels;
+    for (unsigned int i = 0; i < faces.size(); i++)
+    {
+        unsigned char *data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
+        if (data)
+        {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 
+                         0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
+            );
+            stbi_image_free(data);
+        }
+        else
+        {
+            std::cout << "Cubemap tex failed to load at path: " << faces[i] << std::endl;
+            stbi_image_free(data);
+        }
+    }
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    return textureID;
+}  
+
 void init() {
   initGLFW();
   initOpenGL();
   initGPUprogram();
+  // initSkybox();
   initCamera();
   int i=0;
   for (auto& m : media){
@@ -347,6 +441,24 @@ void clear() {
 // The main rendering call
 void render() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Erase the color and z buffers.
+  // glDepthMask(GL_FALSE);
+  // GLint prog;
+  // glGetIntegerv(GL_CURRENT_PROGRAM,&prog);
+  // glUseProgram(skybox_program);
+  // glGetIntegerv(GL_CURRENT_PROGRAM,&prog);
+  // const glm::mat4 viewMatrix = glm::mat4(glm::mat3(g_camera.computeViewMatrix()));
+  // const glm::mat4 projMatrix = g_camera.computeProjectionMatrix();
+
+  // glUniformMatrix4fv(glGetUniformLocation(skybox_program, "viewMat"), 1, GL_FALSE, glm::value_ptr(viewMatrix)); // compute the view matrix of the camera and pass it to the GPU program
+  // glUniformMatrix4fv(glGetUniformLocation(skybox_program, "projMat"), 1, GL_FALSE, glm::value_ptr(projMatrix)); // compute the projection matrix of the camera and pass it to the GPU program
+
+  // glActiveTexture(GL_TEXTURE0);
+  // glBindTexture(GL_TEXTURE_CUBE_MAP, loadCubemap(faces));
+  // glBindVertexArray(skyboxVAO);
+  // glDrawArrays(GL_TRIANGLES, 0, 36);
+  // glDepthMask(GL_TRUE);
+
+  glUseProgram(g_program);
 
   const glm::mat4 viewMatrix = g_camera.computeViewMatrix();
   const glm::mat4 projMatrix = g_camera.computeProjectionMatrix();
@@ -356,6 +468,8 @@ void render() {
 
   const glm::vec3 camPosition = g_camera.getPosition();
   glUniform3f(glGetUniformLocation(g_program, "camPos"), camPosition[0], camPosition[1], camPosition[2]);
+
+  
 
   int i=0;
   for (auto& item : items){

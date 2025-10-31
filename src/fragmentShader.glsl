@@ -23,11 +23,7 @@ void main() {
 	vec3 r = 2*n-l;
 	vec3 h = normalize(l+v);
 	vec3 ambient = col;
-	vec3 diffuse = max(0,dot(n,l))*lcolor*col*4;
-	vec3 specular = pow(max(0,dot(n,h)), 20.0)*lcolor*col;
-	//color = vec4(ambient+diffuse+specular,1.0);
-	// color = vec4(diffuse+specular,1.0)+texture(material, fragmentTexCoord);
+	vec3 diffuse = max(0,dot(n,l))*lcolor*col*5;
+	vec3 specular = pow(max(0,dot(n,h)), 20.0)*lcolor*col*2;
 	color = vec4(ambient+diffuse+specular,1.0)*texture(material, fragmentTexCoord);
-	//color = texture(material, fragmentTexCoord);
-	//color = vec4(ambient+diffuse+specular,1.0)+texture(material, vec2(clamp(fragmentTexCoord.x,0.01,0.99),fragmentTexCoord.y));
 }

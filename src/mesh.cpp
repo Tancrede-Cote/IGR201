@@ -2,20 +2,14 @@
 
 float spheric2cartx(float r,float theta,float phi){
     return r*sinf(theta)*cosf(phi);
-    // return r*cosf(theta);
-    // return r*sinf(theta)*sinf(phi);
 }
 
 float spheric2carty(float r,float theta,float phi){
     return r*sinf(theta)*sinf(phi);
-    // return r*sinf(theta)*cosf(phi);
-    // return r*cosf(theta);
 }
 
 float spheric2cartz(float r,float theta,float phi){
     return r*cosf(theta);
-    // return r*sinf(theta)*sinf(phi);
-    // return r*sinf(theta)*cosf(phi);
 }
 
 float spheric2cartx(glm::vec3 c){
@@ -135,9 +129,9 @@ void Stellar::render(){
     glm::mat4 rotz = glm::rotate(glm::mat4(1.f),-(time)*s_rs*(float)M_PI,glm::vec3(0.,0.,1.));
     glm::mat4 model = glm::translate(glm::scale(glm::mat4(1),glm::vec3(scale)), origin/(scale));
     glUniformMatrix4fv(glGetUniformLocation(m_program, "model"), 1, GL_FALSE, glm::value_ptr(model));
-    glUniformMatrix4fv(glGetUniformLocation(m_program, "rotz"), 1, GL_FALSE, glm::value_ptr(rotz));
     glUniformMatrix4fv(glGetUniformLocation(m_program, "rotx"), 1, GL_FALSE, glm::value_ptr(rotx));
     glUniformMatrix4fv(glGetUniformLocation(m_program, "roty"), 1, GL_FALSE, glm::value_ptr(roty));
+    glUniformMatrix4fv(glGetUniformLocation(m_program, "rotz"), 1, GL_FALSE, glm::value_ptr(rotz));
 
     const glm::vec3 col = color; 
     glUniform3f(glGetUniformLocation(m_program, "col"), col[0], col[1], col[2]);

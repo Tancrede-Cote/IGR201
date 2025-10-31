@@ -55,7 +55,7 @@ static float m_o = 0.f;
 static float e_r = 0.f;// rotation
 static float m_r = 0.f;
 
-std::string media[] = { "", "../media/earth.jpg", "../media/moon.jpg" };
+std::string media[] = { "../media/sun.jpg", "../media/earth.jpg", "../media/moon.jpg" };
 
 static float dt;
 static float previousTime;
@@ -386,9 +386,9 @@ void update(const float currentTimeInSec) {
 
 int main(int argc, char ** argv) {
   init();
-  std::unique_ptr<Stellar> sun = std::make_unique<Stellar>(res, g_program, glm::vec3(0.,0.,0.), glm::vec3(1.,1.,0.), glm::vec3(0.,0.,0.), glm::vec3(0.,0.,0.), size*kSizeSun, 0.f, 1.f*speed, 0.f, true);// for now rotspeed>0
-  std::unique_ptr<Stellar> earth = std::make_unique<Stellar>(res, g_program, glm::vec3(10.,0.,0.), 0.2f*glm::vec3(0.,1.,1.), glm::vec3(0.,0.,-1.), glm::vec3(1.,1.,1.), size*kSizeEarth, 12.f*speed, 6.f*speed, kRadOrbitEarth, true);
-  std::unique_ptr<Stellar> moon = std::make_unique<Stellar>(res, g_program, glm::vec3(24.,0.,0.), 0.2f*glm::vec3(0.,0.,1.), glm::vec3(0.,0.,-1.), glm::vec3(1.,1.,0.), size*kSizeMoon, 24.f*speed, 24.f*speed, kRadOrbitMoon, false);
+  std::unique_ptr<Stellar> sun = std::make_unique<Stellar>(res, g_program, glm::vec3(0.,0.,0.), 2.f*glm::vec3(1.,1.,0.), glm::vec3(0.,0.,0.), glm::vec3(0.,0.,0.), size*kSizeSun, -0.f*speed, 0.f, 0.f, true);// for now rotspeed>0
+  std::unique_ptr<Stellar> earth = std::make_unique<Stellar>(res, g_program, glm::vec3(10.,0.,0.), 0.2f*glm::vec3(1.,1.,1.), glm::vec3(0.,0.,-1.), glm::vec3(1.,1.,1.), size*kSizeEarth, 12.f*speed, 6.f*speed, kRadOrbitEarth, true);
+  std::unique_ptr<Stellar> moon = std::make_unique<Stellar>(res, g_program, glm::vec3(24.,0.,0.), 0.2f*glm::vec3(1.,1.,1.), glm::vec3(0.,0.,-1.), glm::vec3(1.,1.,1.), size*kSizeMoon, 24.f*speed, 24.f*speed, kRadOrbitMoon, false);
   items.push_back(std::move(sun));
   items.push_back(std::move(earth));
   items.push_back(std::move(moon));

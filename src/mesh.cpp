@@ -151,9 +151,9 @@ std::shared_ptr<Mesh> Mesh::genSphere(const size_t _resolution){
 
 void Stellar::render(){
     //glm::mat4 model = glm::rotate(glm::translate(glm::scale(glm::mat4(1),glm::vec3(scale)), origin),-23.5f*(float)M_PI/180.f,glm::vec3(0.,0.,1.));
-    glm::mat4 roty = glm::rotate(glm::mat4(1.f),-(time)*s_rs*(float)M_PI,glm::vec3(0.,0.,1.));
-    glm::mat4 temprotx = glm::rotate(glm::mat4(1.f), -0*(float)M_PI/2.f,glm::vec3(1.,0.,0.));
-    glm::mat4 rotx = glm::rotate(glm::mat4(1.f),-0*(float)M_PI/2.f,glm::vec3(1.,0.,0.));
+    glm::mat4 roty = glm::rotate(glm::mat4(1.f),-(time)*s_rs*(float)M_PI,glm::vec3(0.,0.,1.));//rotate around z axis
+    glm::mat4 temprotx = glm::rotate(glm::mat4(1.f), -(float)M_PI/2.f,glm::vec3(1.,0.,0.));
+    glm::mat4 rotx = glm::rotate(glm::mat4(1.f),-(float)M_PI/2.f,glm::vec3(1.,0.,0.));
     //// std::cout<<time<<std::endl;
     glm::mat4 rotz = glm::rotate(glm::mat4(1.f),23.5f*(float)tilted*(float)M_PI/180.f,glm::vec3(0.,1.,0.));
     glm::mat4 model = glm::translate(glm::scale(glm::mat4(1),glm::vec3(scale)), origin/(scale));
@@ -175,7 +175,7 @@ void Stellar::render(){
 }
 
 void Stellar::update(const float currentTimeInSec, glm::vec3 o_c){
-    // std::cout<<o_c.x<<", "<<o_c.y<<", "<<o_c.z<<std::endl;
+    // 
     float dt = currentTimeInSec-time;
     s_o += dt*s_os*M_PI;
     glm::vec3 new_o = glm::vec3(o_c.x+spheric2cartx(rad,M_PI/2.f,s_o),o_c.y+spheric2carty(rad,M_PI/2.f,s_o),o_c.z+spheric2cartz(rad,M_PI/2.f,s_o));

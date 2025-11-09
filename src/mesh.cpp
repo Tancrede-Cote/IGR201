@@ -24,6 +24,10 @@ float spheric2cartz(glm::vec3 c){
     return c[0]*cosf(c[1]);
 }
 
+float roundZero(float x){
+    return x;
+}
+
 void Mesh::init(){
     glGenVertexArrays(1, &m_vao);
 
@@ -89,26 +93,42 @@ std::shared_ptr<Mesh> Mesh::genSphere(const size_t _resolution){
             sphere->m_vertexTexCoords.push_back(theta/M_PI);
             if(!i){
                 sphere->m_triangleIndices.push_back((unsigned int)0);
+                sphere->m_triangleIndices.push_back((unsigned int)(j+1));
                 sphere->m_triangleIndices.push_back((unsigned int)j);
-                sphere->m_triangleIndices.push_back((unsigned int)((j+resolution-2)%resolution+1));
+            } else if (j==1) {
+                sphere->m_triangleIndices.push_back((unsigned int)((i+1)*(resolution+1)-1));
+                sphere->m_triangleIndices.push_back((unsigned int)(i*(resolution+1)));
+                sphere->m_triangleIndices.push_back((unsigned int)((i+1)*(resolution+1)));
+                sphere->m_triangleIndices.push_back((unsigned int)(i*(resolution+1)+1));
+                sphere->m_triangleIndices.push_back((unsigned int)((i-1)*(resolution+1)+1));
+                sphere->m_triangleIndices.push_back((unsigned int)((i-1)*(resolution+1)+2));
             } else {
-                sphere->m_triangleIndices.push_back((unsigned int)(i*resolution+((j-1)%resolution)+(j==1)*resolution));
-                sphere->m_triangleIndices.push_back((unsigned int)((i-1)*resolution+j));
-                sphere->m_triangleIndices.push_back((unsigned int)(i*resolution+j));
-                sphere->m_triangleIndices.push_back((unsigned int)(i*resolution+j));
-                sphere->m_triangleIndices.push_back((unsigned int)((i-1)*resolution+j));
-                sphere->m_triangleIndices.push_back((unsigned int)((i-1)*resolution+(j+1)-(j==resolution)*resolution));
+                sphere->m_triangleIndices.push_back((unsigned int)(i*(resolution+1)+j-1));
+                sphere->m_triangleIndices.push_back((unsigned int)((i-1)*(resolution+1)+j));
+                sphere->m_triangleIndices.push_back((unsigned int)(i*(resolution+1)+j));
+                sphere->m_triangleIndices.push_back((unsigned int)(i*(resolution+1)+j));
+                sphere->m_triangleIndices.push_back((unsigned int)((i-1)*(resolution+1)+j));
+                sphere->m_triangleIndices.push_back((unsigned int)((i-1)*(resolution+1)+j+1));
             }
             phi+=2*M_PI/(float)resolution;
             j++;
         }
+        sphere->m_vertexPositions.push_back(spheric2cartx(1.f,theta,2*M_PI));
+        sphere->m_vertexPositions.push_back(spheric2carty(1.f,theta,2*M_PI));
+        sphere->m_vertexPositions.push_back(spheric2cartz(1.f,theta,2*M_PI));
+
+        sphere->m_vertexNormals.push_back(spheric2cartx(1.f,theta,2*M_PI));
+        sphere->m_vertexNormals.push_back(spheric2carty(1.f,theta,2*M_PI));
+        sphere->m_vertexNormals.push_back(spheric2cartz(1.f,theta,2*M_PI));
+        sphere->m_vertexTexCoords.push_back(0.);
+        sphere->m_vertexTexCoords.push_back(theta/M_PI);
         theta+=M_PI/(float)resolution;
         i++;
     }
     for (int l=1; l<=resolution; l++){
-        sphere->m_triangleIndices.push_back((unsigned int)(resolution*(resolution-2)+l));
-        sphere->m_triangleIndices.push_back((unsigned int)(resolution*(resolution-2)+l%resolution+1));
-        sphere->m_triangleIndices.push_back((unsigned int)(resolution*(resolution-1)+1));
+        sphere->m_triangleIndices.push_back((unsigned int)(resolution*(resolution-1)+l-2));
+        sphere->m_triangleIndices.push_back((unsigned int)(resolution*(resolution-1)+l-1));
+        sphere->m_triangleIndices.push_back((unsigned int)(resolution*resolution));
     }
     sphere->m_vertexPositions.push_back(0.f);
     sphere->m_vertexPositions.push_back(0.f);
@@ -124,7 +144,7 @@ std::shared_ptr<Mesh> Mesh::genSphere(const size_t _resolution){
 }
 
 void Stellar::render(){
-    glm::mat4 rotx = glm::rotate(glm::mat4(1.f),-(float)M_PI/2.f,glm::vec3(1.,0.,0.));
+    glm::mat4 rotx = glm::rotate(glm::mat4(1.f),-(float)((1)*M_PI/2.f),glm::vec3(1.,0.,0.));
     glm::mat4 roty = glm::rotate(glm::mat4(1.f),23.5f*(float)tilted*(float)M_PI/180.f,glm::vec3(0.,1.,0.));
     glm::mat4 rotz = glm::rotate(glm::mat4(1.f),-(time)*s_rs*(float)M_PI,glm::vec3(0.,0.,1.));
     glm::mat4 model = glm::translate(glm::scale(glm::mat4(1),glm::vec3(scale)), origin/(scale));

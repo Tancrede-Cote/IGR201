@@ -492,7 +492,7 @@ void update(const float currentTimeInSec) {
 
 int main(int argc, char ** argv) {
   init();
-  std::unique_ptr<Stellar> sun = std::make_unique<Stellar>(res, g_program, glm::vec3(0.,0.,0.), 2.f*glm::vec3(1.,1.,0.), glm::vec3(0.,0.,0.), glm::vec3(0.,0.,0.), size*kSizeSun, 0.f, 0.f, 0.f, true);
+  std::unique_ptr<Stellar> sun = std::make_unique<Stellar>(res, g_program, glm::vec3(0.,0.,0.), 2.f*glm::vec3(1.,1.,0.), glm::vec3(0.,0.,0.), glm::vec3(0.,0.,0.), size*kSizeSun, 4.f*speed, 0.f, 0.f, true);
   std::unique_ptr<Stellar> earth = std::make_unique<Stellar>(res, g_program, glm::vec3(10.,0.,0.), 0.2f*glm::vec3(1.,1.,1.), glm::vec3(0.,0.,-1.), glm::vec3(1.,1.,1.), size*kSizeEarth, 12.f*speed, 6.f*speed, kRadOrbitEarth, true);
   std::unique_ptr<Stellar> moon = std::make_unique<Stellar>(res, g_program, glm::vec3(24.,0.,0.), 0.2f*glm::vec3(1.,1.,1.), glm::vec3(0.,0.,-1.), glm::vec3(1.,1.,1.), size*kSizeMoon, 24.f*speed, 24.f*speed, kRadOrbitMoon, false);
   items.push_back(std::move(sun));

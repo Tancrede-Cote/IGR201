@@ -27,5 +27,6 @@ void main() {
 	vec3 diffuse = max(0,dot(n,l))*lcolor*col*2;
 	vec3 specular = pow(max(0,dot(n,h)), 5.0)*lcolor*col*2;
 	color = vec4(ambient+diffuse+specular,1.0)*texture(material, fragmentTexCoord);
+	//color = vec4(fNormal,1.0);
 	// color = vec4(gouraudLighting,1.0);
 }

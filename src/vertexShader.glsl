@@ -8,12 +8,17 @@ out vec3 fPosition;
 out vec3 coords;
 out vec4 fPositionE;
 out vec2 fragmentTexCoord;
+uniform vec3 lighting;
+out vec3 gouraudLighting;
 
 uniform mat4 temprotx, rotz, rotx, roty, model, viewMat, projMat;
 
 void main() {   
+        vec3 n = normalize(vNormal);
+	vec3 l = normalize(lighting);
         gl_Position = projMat*viewMat*rotx*model*roty*rotz*vec4(vPosition, 1.0); // mandatory to rasterize properly
         fNormal=mat3(transpose(inverse(model*roty*rotz)))*vNormal;
         fPosition=vPosition;
+        gouraudLighting=max(0,dot(n,l))*vec3(1.0,1.0,0.0)*2;
         fragmentTexCoord=vertexTexCoord;
 }

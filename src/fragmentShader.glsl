@@ -8,6 +8,7 @@ uniform vec3 lcolor;
 
 uniform sampler2D material;
 
+in vec3 gouraudLighting;
 in vec3 fPosition;
 in vec3 fNormal;
 in vec3 coords;
@@ -20,10 +21,11 @@ void main() {
 	vec3 v = normalize(camPos);
 	vec3 l = normalize(lighting);
 	l = vec3(l.x,-l.y, l.z);
-	vec3 r = 2*n-l;
+	vec3 r = 2*(dot(n,l))*n-l;
 	vec3 h = normalize(l+v);
 	vec3 ambient = col;
-	vec3 diffuse = max(0,dot(n,l))*lcolor*col*5;
-	vec3 specular = pow(max(0,dot(n,h)), 20.0)*lcolor*col*2;
+	vec3 diffuse = max(0,dot(n,l))*lcolor*col*2;
+	vec3 specular = pow(max(0,dot(n,h)), 5.0)*lcolor*col*2;
 	color = vec4(ambient+diffuse+specular,1.0)*texture(material, fragmentTexCoord);
+	// color = vec4(gouraudLighting,1.0);
 }
